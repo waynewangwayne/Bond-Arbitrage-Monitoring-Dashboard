@@ -288,6 +288,24 @@ def display_metric_card(title, current_value, previous_value, unit="bps", is_per
 def main():
     st.markdown('<div class="main-header">🏦 Bond Arbitrage Monitor</div>', unsafe_allow_html=True)
     
+    # Strategy Guide Link
+    st.markdown("""
+    <div style='text-align: center; margin-bottom: 1rem;'>
+        <a href="https://claude.ai/public/artifacts/15bdbb30-e563-4f7b-b2fe-3e3eb00d9c13" 
+           target="_blank" 
+           style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                  color: white; 
+                  padding: 8px 16px; 
+                  border-radius: 20px; 
+                  text-decoration: none; 
+                  font-weight: bold;
+                  font-size: 0.9rem;
+                  box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+            📚 Bond Arbitrage Strategy Guide
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+    
     # Auto-refresh mechanism
     placeholder = st.empty()
     
