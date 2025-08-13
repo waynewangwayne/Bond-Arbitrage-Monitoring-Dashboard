@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bond Arbitrage Strategy Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            min-height: 80vh;
+        }
+        
+        .sidebar {
+            background: #2c3e50;
+            padding: 20px;
+            color: white;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: #3498db;
+            font-size: 1.3em;
+        }
+        
+        .nav-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: #34495e;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: #3498db;
+            border-left-color: #e74c3c;
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: #3498db;
+            border-left-color: #f39c12;
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .content {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .checklist {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .checklist h4 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .checklist-item:hover {
+            background: #e9ecef;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .strategy-box {
+            background: #f1f3f4;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .strategy-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            margin: -20px -20px 15px -20px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+        }
+        
+        .entry-criteria {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .entry-criteria h5 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+        
+        .execution-steps {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .execution-steps h5 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .risk-management {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .risk-management h5 {
+            color: #721c24;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .metric-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .metric-card .value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left-color: #0c5460;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left-color: #856404;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-left-color: #721c24;
+            color: #721c24;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Bond Arbitrage Strategy Guide</h1>
+            <p>Professional Fixed Income Trading Strategies & Execution Framework</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="sidebar">
+                <h3>📋 Strategy Guide</h3>
+                
+                <div class="nav-item active" onclick="showSection('overview')">
+                    <i>📊</i> Overview & Checklist
+                </div>
+                
+                <div class="nav-item" onclick="showSection('primary-secondary')">
+                    <i>🎯</i> Primary-Secondary Arbitrage
+                </div>
+                
+                <div class="nav-item" onclick="showSection('when-issued')">
+                    <i>⚡</i> When-Issued Trading
+                </div>
+                
+                <div class="nav-item" onclick="showSection('cash-futures')">
+                    <i>🔄</i> Cash-Futures Basis
+                </div>
+                
+                <div class="nav-item" onclick="showSection('curve-arbitrage')">
+                    <i>📈</i> Cross-Curve Arbitrage
+                </div>
+                
+                <div class="nav-item" onclick="showSection('position-sizing')">
+                    <i>💰</i> Position Sizing
+                </div>
+                
+                <div class="nav-item" onclick="showSection('execution')">
+                    <i>🚨</i> Real-Time Execution
+                </div>
+                
+                <div class="nav-item" onclick="showSection('performance')">
+                    <i>📊</i> Performance Tracking
+                </div>
+                
+                <div class="nav-item" onclick="showSection('technology')">
+                    <i>🔧</i> Technology Setup
+                </div>
+                
+                <div class="nav-item" onclick="showSection('pitfalls')">
+                    <i>⚠️</i> Common Pitfalls
+                </div>
+                
+                <div class="nav-item" onclick="showSection('targets')">
+                    <i>🎯</i> Success Metrics
+                </div>
+            </div>
+            
+            <div class="content">
+                <!-- Overview Section -->
+                <div id="overview" class="section active">
+                    <h2>📋 Pre-Trade Daily Checklist</h2>
+                    
+                    <div class="checklist">
+                        <h4>Daily Market Assessment</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="vix-check">
+                            <label for="vix-check">Check VIX level (&lt;20: Normal, 20-25: Elevated, &gt;25: High stress)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="repo-check">
+                            <label for="repo-check">Verify repo rates within ±25bps of Fed Funds</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="spread-check">
+                            <label for="spread-check">Confirm bid-ask spreads &lt;2x normal levels</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="auction-check">
+                            <label for="auction-check">Check upcoming auction calendar</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="capital-check">
+                            <label for="capital-check">Verify position limits and available capital</label>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4>Target Win Rate</h4>
+                            <div class="value">>65%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Target Sharpe</h4>
+                            <div class="value">>2.0</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Max Drawdown</h4>
+                            <div class="value">&lt;5%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Annual Target</h4>
+                            <div class="value">8-15%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary-Secondary Section -->
+                <div id="primary-secondary" class="section">
+                    <h2>🎯 Primary-Secondary Market Spread Arbitrage</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">LONG SPREAD Strategy (Buy Primary, Sell Secondary)</div>
+                        
+                        <div class="entry-criteria">
+                            <h5>Entry Criteria:</h5>
+                            <ul>
+                                <li>Z-score &lt; -1.5 (spread abnormally low)</li>
+                                <li>Primary auction yield &lt; Secondary market yield by &gt;3bps</li>
+                                <li>Bid-to-cover ratio &gt;2.5 (strong auction demand)</li>
+                                <li>Auction tail &lt;2bps</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="execution-steps">
+                            <h5>Execution Steps:</h5>
+                            <ol>
+                                <li><strong>PRE-AUCTION (Day -1):</strong>
+                                    <ul>
+                                        <li>Submit competitive bid at estimated clearing yield</li>
+                                        <li>Simultaneously short similar maturity secondary bond</li>
+                                        <li>Position size: 2-5% of portfolio per trade</li>
+                                    </ul>
+                                </li>
+                                <li><strong>AUCTION DAY:</strong>
+                                    <ul>
+                                        <li>Monitor auction results vs expectations</li>
+                                        <li>If awarded: Hold position</li>
+                                        <li>If not awarded: Cover secondary short immediately</li>
+                                    </ul>
+                                </li>
+                                <li><strong>POST-AUCTION (Day +1 to +5):</strong>
+                                    <ul>
+                                        <li>Monitor spread convergence</li>
+                                        <li>Target profit: 2-5bps</li>
+                                        <li>Stop loss: -3bps adverse move</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="risk-management">
+                            <h5>Risk Management:</h5>
+                            <ul>
+                                <li><strong>Maximum position:</strong> 10% of portfolio across all primary-secondary trades</li>
+                                <li><strong>Time stop:</strong> Close position after 5 trading days regardless</li>
+                                <li><strong>Correlation limit:</strong> No more than 3 similar maturity trades simultaneously</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Exit Signals:</strong><br>
+                        ✅ <strong>Take Profit:</strong> Spread returns to historical mean ± 0.5 std dev<br>
+                        ❌ <strong>Stop Loss:</strong> 3bps adverse move or 2 days before next auction<br>
+                        ⏰ <strong>Time Stop:</strong> 5 trading days maximum hold period
+                    </div>
+                </div>
+
+                <!-- When-Issued Section -->
+                <div id="when-issued" class="section">
+                    <h2>⚡ When-Issued (WI) Trading Strategy</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">WI Trading Framework</div>
+                        
+                        <div class="entry-criteria">
+                            <h5>Entry Criteria:</h5>
+                            <ul>
+                                <li>WI vs Secondary spread &gt;3bps</li>
+                                <li>2-5 days before auction date</li>
+                                <li>Normal market conditions (VIX &lt;25)</li>
+                                <li>Sufficient WI liquidity (&gt;$10M daily volume)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="execution-steps">
+                            <h5>SELL WI, BUY SECONDARY (WI trading rich):</h5>
+                            <div class="code-block">Day -3 to -2 Before Auction:
+1. Sell WI bonds via primary dealer network
+2. Buy comparable secondary market bonds (duration-matched)
+3. Target spread: 3-6bps profit potential
+
+Position Sizing:
+- Conservative: 1-2% portfolio per trade
+- Aggressive: 3-5% portfolio per trade</div>
+                        </div>
+                        
+                        <div class="risk-management">
+                            <h5>Platform Selection & Timing:</h5>
+                            <ul>
+                                <li><strong>Institutional:</strong> Bloomberg TSOX, BrokerTec</li>
+                                <li><strong>Best Entry:</strong> 2-3 days before auction (maximum uncertainty)</li>
+                                <li><strong>Latest Entry:</strong> Day before auction (reduced profit potential)</li>
+                                <li><strong>Avoid:</strong> Day of auction (execution risk too high)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Risk Limits:</strong><br>
+                        • Single Trade Limit: 5% portfolio maximum<br>
+                        • Aggregate WI Exposure: 15% portfolio maximum<br>
+                        • Liquidity Reserve: Maintain 20% cash for unexpected moves
+                    </div>
+                </div>
+
+                <!-- Cash-Futures Section -->
+                <div id="cash-futures" class="section">
+                    <h2>🔄 Cash-Futures Basis Trading</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Basis Trading Setup</div>
+                        
+                        <div class="entry-criteria">
+                            <h5>Setup Requirements:</h5>
+                            <ul>
+                                <li>Real-time futures pricing (CME Globex)</li>
+                                <li>Cash bond pricing (institutional dealer network)</li>
+                                <li>Repo rate monitoring</li>
+                                <li>Conversion factor calculations</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="execution-steps">
+                            <h5>LONG BASIS Trade Process:</h5>
+                            <div class="code-block">1. CALCULATION:
+   Fair Basis = Repo Rate × (Days to Delivery / 365)
+   Current Basis = Futures Price - (Cash Price × Conversion Factor)
+   
+2. ENTRY (when Current < Fair - 0.10):
+   - Buy 1 futures contract ($100,000 notional)
+   - Sell $100,000 × Conversion Factor of cash bonds
+   - Finance short position via repo market
+
+3. MONITORING:
+   - Daily mark-to-market
+   - Repo rate changes
+   - Delivery option value (last 7 days)</div>
+                        </div>
+                        
+                        <div class="risk-management">
+                            <h5>Conversion Factor Example:</h5>
+                            <div class="code-block"># 10-Year Treasury Future (Notional 6% coupon)
+Cash Bond: 4.5% coupon, 8.5 years to maturity
+Conversion Factor = 0.8123
+
+Trade Size Calculation:
+- Futures: 1 contract ($100,000)
+- Cash: $100,000 × 0.8123 = $81,230 face value</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <strong>Risk Management:</strong><br>
+                        • Basis Point Value: ~$100 per tick for 10Y futures<br>
+                        • Stop Loss: 5 ticks = $500 maximum loss<br>
+                        • Position Limit: 10 contracts maximum per strategy<br>
+                        • Delivery Risk: Close all positions 10 days before delivery
+                    </div>
+                </div>
+
+                <!-- Cross-Curve Section -->
+                <div id="curve-arbitrage" class="section">
+                    <h2>📈 Cross-Curve Arbitrage Strategies</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Butterfly Spread (2s-5s-10s)</div>
+                        
+                        <div class="execution-steps">
+                            <h5>Trade Structure (When curve is too flat):</h5>
+                            <ul>
+                                <li>Long 2-year Treasury: $1M</li>
+                                <li>Short 5-year Treasury: $2M</li>
+                                <li>Long 10-year Treasury: $1M</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="entry-criteria">
+                            <h5>Entry Criteria:</h5>
+                            <ul>
+                                <li>Butterfly value &lt;historical 25th percentile</li>
+                                <li>Central bank not actively flattening curve</li>
+                                <li>Duration-neutral positioning</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Steepener/Flattener (5s30s)</div>
+                        
+                        <div class="execution-steps">
+                            <h5>Steepener Trade Execution:</h5>
+                            <div class="code-block">EXECUTION:
+- Short 5-year Treasury: $1M
+- Long 30-year Treasury: $X (duration-matched)
+- Duration Match: 30Y amount = 5Y amount × (5Y duration / 30Y duration)</div>
+                        </div>
+                        
+                        <div class="entry-criteria">
+                            <h5>Entry Criteria:</h5>
+                            <ul>
+                                <li>5s30s spread &lt;50bps (historically low)</li>
+                                <li>Economic growth expectations rising</li>
+                                <li>Fed in tightening cycle early stages</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Critical Risk Management:</strong><br>
+                        • Duration Neutrality: Essential to isolate curve risk<br>
+                        • DV01 Matching: Ensure equal dollar duration on both legs<br>
+                        • Correlation Monitoring: Watch for breakdown in historical relationships
+                    </div>
+                </div>
+
+                <!-- Position Sizing Section -->
+                <div id="position-sizing" class="section">
+                    <h2>💰 Position Sizing & Capital Allocation</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Kelly Criterion Application</div>
+                        
+                        <div class="code-block">def calculate_position_size(win_rate, avg_win, avg_loss, portfolio_size):
+    kelly_fraction = (win_rate * avg_win - (1-win_rate) * avg_loss) / avg_win
+    conservative_kelly = kelly_fraction * 0.25  # 25% of Kelly for safety
+    max_position = min(conservative_kelly, 0.10)  # Cap at 10%
+    return portfolio_size * max_position</div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4>Single Strategy</h4>
+                            <div class="value">Max 15%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Similar Maturity</h4>
+                            <div class="value">Max 25%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Total Arbitrage</h4>
+                            <div class="value">Max 60%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Cash Reserve</h4>
+                            <div class="value">Min 20%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Execution Section -->
+                <div id="execution" class="section">
+                    <h2>🚨 Real-Time Execution Checklist</h2>
+                    
+                    <div class="checklist">
+                        <h4>When Dashboard Alert Triggers</h4>
+                        
+                        <h5>Immediate Assessment (First 5 minutes):</h5>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="verify-data">
+                            <label for="verify-data">Verify data accuracy (cross-check multiple sources)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-conditions">
+                            <label for="check-conditions">Check market conditions (VIX, bid-ask spreads)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="confirm-capital">
+                            <label for="confirm-capital">Confirm available capital and margin</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="review-correlations">
+                            <label for="review-correlations">Review existing position correlations</label>
+                        </div>
+                        
+                        <h5>Trade Execution (Next 10 minutes):</h5>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="calc-size">
+                            <label for="calc-size">Calculate optimal position size</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="identify-venues">
+                            <label for="identify-venues">Identify best execution venues</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="place-orders">
+                            <label for="place-orders">Place orders simultaneously (legs within 30 seconds)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="confirm-fills">
+                            <label for="confirm-fills">Confirm fills and mark-to-market</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Tracking Section -->
+                <div id="performance" class="section">
+                    <h2>📊 Performance Tracking & Analysis</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Daily P&L Analysis Template</div>
+                        
+                        <div class="code-block">Trade ID: PS_20250813_001
+Strategy: Primary-Secondary Spread
+Entry Date: 2025-08-13
+Entry Spread: 4.2bps
+Current Spread: 3.1bps
+Unrealized P&L: +$2,100
+Days Held: 2
+Target Exit: 2.5bps
+Stop Loss: 7.2bps</div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4>Target Win Rate</h4>
+                            <div class="value">>65%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Average Win</h4>
+                            <div class="value">>3bps</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Average Loss</h4>
+                            <div class="value">&lt;2bps</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Max Drawdown</h4>
+                            <div class="value">&lt;3%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technology Section -->
+                <div id="technology" class="section">
+                    <h2>🔧 Technology Setup & Automation</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Required Tools</div>
+                        
+                        <ul>
+                            <li><strong>Data:</strong> Bloomberg Terminal or Refinitiv Eikon</li>
+                            <li><strong>Execution:</strong> Prime brokerage with fixed income capabilities</li>
+                            <li><strong>Risk Management:</strong> Real-time position monitoring</li>
+                            <li><strong>Programming:</strong> Python for automation and backtesting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Automation Example</div>
+                        
+                        <div class="code-block"># Example alert system
+def check_arbitrage_opportunities():
+    opportunities = []
+    
+    # Primary-Secondary monitoring
+    ps_zscore = calculate_zscore(ps_spread, historical_ps)
+    if abs(ps_zscore) > 1.5:
+        opportunities.append(generate_ps_signal(ps_zscore))
+    
+    # WI monitoring  
+    wi_spread = get_wi_spread()
+    if wi_spread > 3:
+        opportunities.append(generate_wi_signal(wi_spread))
+        
+    return prioritize_opportunities(opportunities)</div>
+                    </div>
+                </div>
+
+                <!-- Common Pitfalls Section -->
+                <div id="pitfalls" class="section">
+                    <h2>⚠️ Common Pitfalls & How to Avoid Them</h2>
+                    
+                    <div class="alert alert-danger">
+                        <h5>Execution Mistakes:</h5>
+                        <ul>
+                            <li><strong>Leg Risk:</strong> Always execute both sides within 30 seconds</li>
+                            <li><strong>Size Mismatch:</strong> Verify duration/DV01 matching before trading</li>
+                            <li><strong>Settlement Issues:</strong> Confirm settlement dates align</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h5>Market Risk Errors:</h5>
+                        <ul>
+                            <li><strong>Ignoring Volatility Regime:</strong> Reduce size when VIX >25</li>
+                            <li><strong>Correlation Breakdown:</strong> Monitor when historical relationships fail</li>
+                            <li><strong>Liquidity Misjudgment:</strong> Ensure exit liquidity before entry</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h5>Operational Failures:</h5>
+                        <ul>
+                            <li><strong>Data Lag:</strong> Use multiple data sources for confirmation</li>
+                            <li><strong>Technology Failure:</strong> Have backup execution methods</li>
+                            <li><strong>Position Tracking:</strong> Maintain real-time position updates</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Success Targets Section -->
+                <div id="targets" class="section">
+                    <h2>🎯 Success Metrics & Performance Targets</h2>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Individual Trade Targets</div>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h4>Primary-Secondary</h4>
+                                <div class="value">2-5bps profit<br>&lt;2bps loss</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>WI Trading</h4>
+                                <div class="value">3-6bps profit<br>&lt;3bps loss</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>Basis Trading</h4>
+                                <div class="value">5-15bps profit<br>&lt;5bps loss</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>Curve Arbitrage</h4>
+                                <div class="value">3-10bps profit<br>&lt;3bps loss</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-box">
+                        <div class="strategy-header">Portfolio Level Targets</div>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h4>Annual Return</h4>
+                                <div class="value">8-15%<br>(2-3x leverage)</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>Sharpe Ratio</h4>
+                                <div class="value">>2.0</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>Max Drawdown</h4>
+                                <div class="value">&lt;5%</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>Win Rate</h4>
+                                <div class="value">>65%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <h5>Risk Limits:</h5>
+                        <ul>
+                            <li><strong>Single Trade:</strong> Maximum 5% portfolio loss</li>
+                            <li><strong>Daily VaR:</strong> Maximum 2% portfolio value</li>
+                            <li><strong>Weekly Drawdown:</strong> Maximum 3% portfolio value</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <p><em><strong>Remember:</strong> These strategies require sophisticated infrastructure and deep market knowledge. Start with small positions and gradually scale as you gain experience and confidence in execution.</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+        }
+        
+        // Add some interactivity to checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                if (e.target.checked) {
+                    e.target.parentElement.style.background = '#d4edda';
+                    e.target.parentElement.style.border = '1px solid #c3e6cb';
+                    e.target.parentElement.style.borderRadius = '4px';
+                } else {
+                    e.target.parentElement.style.background = '';
+                    e.target.parentElement.style.border = '';
+                    e.target.parentElement.style.borderRadius = '';
+                }
+            }
+        });
+        
+        // Add progress tracking for checklists
+        function updateProgress() {
+            const checklists = document.querySelectorAll('.checklist');
+            checklists.forEach(checklist => {
+                const checkboxes = checklist.querySelectorAll('input[type="checkbox"]');
+                const checked = checklist.querySelectorAll('input[type="checkbox"]:checked');
+                const progress = (checked.length / checkboxes.length * 100).toFixed(0);
+                
+                // You could add a progress bar here if desired
+                console.log(`Checklist progress: ${progress}%`);
+            });
+        }
+        
+        // Update progress when checkboxes change
+        document.addEventListener('change', updateProgress);
+        
+        // Add some hover effects and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling to content area
+            const content = document.querySelector('.content');
+            content.style.scrollBehavior = 'smooth';
+            
+            // Add click handlers for buttons (if any are added later)
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn')) {
+                    e.target.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        e.target.style.transform = '';
+                    }, 150);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
